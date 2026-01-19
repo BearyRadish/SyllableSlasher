@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1e3a8a">
+  <title>Syllable Slasher</title>
+  <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlN5bGxhYmxlIFNsYXNoZXIiLAogICJzaG9ydF9uYW1lIjogIlNsYXNoZXIiLAogICJkZXNjcmlwdGlvbiI6ICJBIGZ1biBnYW1lIHRvIGxlYXJuIHN5bGxhYmxlIGRpdmlzaW9uIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMxZTNhOGEiLAogICJ0aGVtZV9jb2xvciI6ICIjMWUzYThhIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3JlY3Qgd2lkdGg9JzEwMCcgaGVpZ2h0PScxMDAnIGZpbGw9JyUyMzFlM2E4YScvJTNFJTNDdGV4dCB4PSc1MCcgeT0nNjAnIGZvbnQtc2l6ZT0nNTAnIGZpbGw9JyUyM2ZmZicgdGV4dC1hbmNob3I9J21pZGRsZSclM0VTJTNDL3RleHQlM0UlM0Mvc3ZnJTNFIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDEwMCAxMDAnJTNFJTNDcmVjdCB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgZmlsbD0nJTIzMWUzYThhJy8lM0UlM0N0ZXh0IHg9JzUwJyB5PSc2MCcgZm9udC1zaXplPSc1MCcgZmlsbD0nJTIzZmZmJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyUzRVMlM0MvdGV4dCUzRSUzQy9zdmclM0UiLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow: hidden;
+      touch-action: none;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(to bottom, #1e3a8a, #581c87);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .menu-screen {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #fbbf24;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      padding: 1.5rem 2rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      color: white;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-level {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .btn-menu {
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+    }
+
+    .level-info {
+      font-size: 0.9rem;
+      color: #d1d5db;
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .playing-screen {
+      flex-direction: column;
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .lives {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .heart {
+      font-size: 2rem;
+    }
+
+    .score {
+      background: rgba(0,0,0,0.5);
+      padding: 0.5rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fbbf24;
+    }
+
+    .progress-container {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 1rem;
+      background: #4b5563;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #10b981;
+      transition: width 0.3s;
+    }
+
+    .progress-text {
+      text-align: center;
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+    }
+
+    .game-canvas {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .word {
+      position: absolute;
+      background: linear-gradient(135deg, #fb923c, #ec4899);
+      border: 4px solid #fbbf24;
+      border-radius: 999px;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      transition: none;
+      pointer-events: none;
+    }
+
+    .word-letters {
+      display: flex;
+    }
+
+    .letter {
+      font-size: 2rem;
+      font-weight: bold;
+      width: 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .slice-mark {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background: #10b981;
+    }
+
+    .slice-trail {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #22d3ee;
+      border-radius: 50%;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .explosion {
+      position: absolute;
+      font-size: 4rem;
+      animation: explode 0.5s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes explode {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    .results-screen {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .results-card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .result-row {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .badges {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 12px;
+      min-width: 100px;
+    }
+
+    .badge-accuracy { background: #eab308; }
+    .badge-speed { background: #3b82f6; }
+    .badge-master { background: #a855f7; }
+
+    .badge-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .badge-label {
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      color: #1f2937;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .modal h2 {
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 2rem; }
+      .btn { padding: 1rem 1.5rem; font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Menu Screen -->
+    <div class="screen menu-screen active">
+      <h1>🗡️ Syllable Slasher</h1>
+      <p class="subtitle">Slice words at the right syllable breaks!</p>
+      <div class="level-grid">
+        <button class="btn btn-level" onclick="game.startLevel(1)">Level 1</button>
+        <button class="btn btn-level" onclick="game.startLevel(2)">Level 2</button>
+        <button class="btn btn-level" onclick="game.startLevel(3)">Level 3</button>
+        <button class="btn btn-level" onclick="game.startLevel(4)">Level 4</button>
+      </div>
+      <div class="level-info">
+        <p>Level 1: VCV Patterns • Level 2: Silent E/LE</p>
+        <p>Level 3: Affixes • Level 4: Mega-Words</p>
+      </div>
+    </div>
+
+    <!-- Playing Screen -->
+    <div class="screen playing-screen">
+      <div class="hud">
+        <div class="lives" id="lives"></div>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+          </div>
+          <div class="progress-text" id="progressText"></div>
+        </div>
+        <div class="score" id="score">0</div>
+      </div>
+      <div class="game-canvas" id="canvas"></div>
+      <div class="modal-overlay" id="levelComplete">
+        <div class="modal">
+          <h2>Level Complete! 🎉</h2>
+          <button class="btn btn-action" onclick="game.showResults()">See Results</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="screen results-screen">
+      <h1>Results</h1>
+      <div class="results-card">
+        <div class="result-row">Score: <span style="color: #fbbf24;" id="finalScore"></span></div>
+        <div class="result-row">Accuracy: <span style="color: #10b981;" id="accuracy"></span></div>
+        <div class="result-row">Hero Word: <span style="color: #ec4899;" id="heroWord"></span></div>
+      </div>
+      <div class="badges" id="badges"></div>
+      <div class="button-group">
+        <button class="btn btn-action" onclick="game.retry()">Try Again</button>
+        <button class="btn btn-next" id="nextBtn" onclick="game.nextLevel()">Next Level</button>
+        <button class="btn btn-menu" onclick="game.showMenu()">Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WORD_BANK = {
+      1: [
+        { word: 'TIGER', breaks: [2], syllables: ['TI', 'GER'] },
+        { word: 'CAMEL', breaks: [3], syllables: ['CAM', 'EL'] },
+        { word: 'ROBOT', breaks: [2], syllables: ['RO', 'BOT'] },
+        { word: 'MUSIC', breaks: [2], syllables: ['MU', 'SIC'] },
+        { word: 'PAPER', breaks: [2], syllables: ['PA', 'PER'] },
+        { word: 'LABEL', breaks: [2], syllables: ['LA', 'BEL'] },
+        { word: 'SEVEN', breaks: [2], syllables: ['SE', 'VEN'] },
+        { word: 'CABIN', breaks: [3], syllables: ['CAB', 'IN'] },
+      ],
+      2: [
+        { word: 'STAPLE', breaks: [3], syllables: ['STA', 'PLE'] },
+        { word: 'VAMPIRE', breaks: [3], syllables: ['VAM', 'PIRE'] },
+        { word: 'SIMPLE', breaks: [3], syllables: ['SIM', 'PLE'] },
+        { word: 'PURPLE', breaks: [3], syllables: ['PUR', 'PLE'] },
+        { word: 'JUNGLE', breaks: [3], syllables: ['JUN', 'GLE'] },
+        { word: 'CANDLE', breaks: [3], syllables: ['CAN', 'DLE'] },
+        { word: 'AMPLE', breaks: [2], syllables: ['AM', 'PLE'] },
+        { word: 'CIRCLE', breaks: [3], syllables: ['CIR', 'CLE'] },
+      ],
+      3: [
+        { word: 'REJECTION', breaks: [2, 5], syllables: ['RE', 'JEC', 'TION'] },
+        { word: 'PREVIEW', breaks: [3], syllables: ['PRE', 'VIEW'] },
+        { word: 'UNFAIR', breaks: [2], syllables: ['UN', 'FAIR'] },
+        { word: 'TEACHER', breaks: [4], syllables: ['TEACH', 'ER'] },
+        { word: 'REPLAY', breaks: [2], syllables: ['RE', 'PLAY'] },
+        { word: 'HELPLESS', breaks: [4], syllables: ['HELP', 'LESS'] },
+        { word: 'FASTER', breaks: [4], syllables: ['FAST', 'ER'] },
+        { word: 'RETHINK', breaks: [2], syllables: ['RE', 'THINK'] },
+      ],
+      4: [
+        { word: 'CONSTITUTION', breaks: [3, 6, 8], syllables: ['CON', 'STI', 'TU', 'TION'] },
+        { word: 'CELEBRATION', breaks: [3, 5, 7], syllables: ['CEL', 'E', 'BRA', 'TION'] },
+        { word: 'IMAGINATION', breaks: [1, 4, 6, 8], syllables: ['I', 'MAG', 'I', 'NA', 'TION'] },
+        { word: 'UNDERSTANDING', breaks: [5, 9], syllables: ['UNDER', 'STAN', 'DING'] },
+        { word: 'INDEPENDENT', breaks: [2, 4, 6], syllables: ['IN', 'DE', 'PEN', 'DENT'] },
+      ],
+    };
+
+    const game = {
+      state: 'menu',
+      level: 1,
+      score: 0,
+      lives: 3,
+      words: [],
+      stats: { correct: 0, total: 0, times: [], longestWord: '' },
+      wordsCompleted: 0,
+      totalWords: 0,
+      lastSpawn: 0,
+      animFrame: null,
+      touchStart: null,
+      slicePath: [],
+
+      init() {
+        const canvas = document.getElementById('canvas');
+        canvas.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
+        canvas.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
+        canvas.addEventListener('touchend', (e) => this.onTouchEnd(e), { passive: false });
+        
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register(this.getServiceWorkerCode()).catch(() => {});
+        }
+      },
+
+      getServiceWorkerCode() {
+        const code = `
+          self.addEventListener('install', e => self.skipWaiting());
+          self.addEventListener('activate', e => self.clients.claim());
+        `;
+        return URL.createObjectURL(new Blob([code], { type: 'application/javascript' }));
+      },
+
+      showScreen(name) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelector(`.${name}-screen`).classList.add('active');
+        this.state = name;
+      },
+
+      startLevel(lvl) {
+        this.level = lvl;
+        this.score = 0;
+        this.lives = 3;
+        this.words = [];
+        this.wordsCompleted = 0;
+        this.totalWords = WORD_BANK[lvl].length;
+        this.stats = { correct: 0, total: 0, times: [], longestWord: '' };
+        this.lastSpawn = Date.now();
+        
+        this.updateHUD();
+        this.showScreen('playing');
+        this.gameLoop();
+      },
+
+      updateHUD() {
+        const livesEl = document.getElementById('lives');
+        livesEl.innerHTML = '';
+        for (let i = 0; i < 3; i++) {
+          const heart = document.createElement('div');
+          heart.className = 'heart';
+          heart.textContent = i < this.lives ? '❤️' : '🖤';
+          livesEl.appendChild(heart);
+        }
+
+        document.getElementById('score').textContent = this.score;
+        const progress = (this.wordsCompleted / this.totalWords) * 100;
+        document.getElementById('progress').style.width = progress + '%';
+        document.getElementById('progressText').textContent = `${this.wordsCompleted}/${this.totalWords}`;
+      },
+
+      spawnWord() {
+        const available = WORD_BANK[this.level].filter(w =>
+          !this.words.some(active => active.text === w.word) &&
+          this.stats.longestWord !== w.word
+        );
+
+        if (available.length === 0) return;
+
+        const wordData = available[Math.floor(Math.random() * available.length)];
+        const word = {
+          id: Date.now() + Math.random(),
+          text: wordData.word,
+          breaks: wordData.breaks,
+          syllables: wordData.syllables,
+          x: Math.random() * (window.innerWidth - 200) + 100,
+          y: window.innerHeight,
+          speed: 1 + Math.random() * 0.5,
+          slicedAt: [],
+          element: this.createWordElement(wordData.word),
+        };
+
+        this.words.push(word);
+        document.getElementById('canvas').appendChild(word.element);
+      },
+
+      createWordElement(text) {
+        const el = document.createElement('div');
+        el.className = 'word';
+        const letters = document.createElement('div');
+        letters.className = 'word-letters';
+        
+        for (let char of text) {
+          const letter = document.createElement('div');
+          letter.className = 'letter';
+          letter.textContent = char;
+          letters.appendChild(letter);
+        }
+        
+        el.appendChild(letters);
+        return el;
+      },
+
+      gameLoop() {
+        if (this.state !== 'playing') return;
+
+        const now = Date.now();
+        
+        if (now - this.lastSpawn > 2500 && this.wordsCompleted < this.totalWords) {
+          this.spawnWord();
+          this.lastSpawn = now;
+        }
+
+        this.words = this.words.filter(word => {
+          word.y -= word.speed;
+          word.element.style.left = word.x + 'px';
+          word.element.style.top = word.y + 'px';
+
+          if (word.y < -100) {
+            this.loseLife();
+            this.explode(word.x, 50);
+            word.element.remove();
+            return false;
+          }
+          return true;
+        });
+
+        if (this.wordsCompleted >= this.totalWords && this.lives > 0) {
+          document.getElementById('levelComplete').classList.add('active');
+          return;
+        }
+
+        this.animFrame = requestAnimationFrame(() => this.gameLoop());
+      },
+
+      onTouchStart(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        this.touchStart = Date.now();
+        this.slicePath = [{ x: touch.clientX, y: touch.clientY }];
+      },
+
+      onTouchMove(e) {
+        e.preventDefault();
+        if (!this.slicePath.length) return;
+        
+        const touch = e.touches[0];
+        const point = { x: touch.clientX, y: touch.clientY };
+        this.slicePath.push(point);
+        
+        const trail = document.createElement('div');
+        trail.className = 'slice-trail';
+        trail.style.left = point.x - 6 + 'px';
+        trail.style.top = point.y - 6 + 'px';
+        document.getElementById('canvas').appendChild(trail);
+        setTimeout(() => trail.remove(), 200);
+      },
+
+      onTouchEnd(e) {
+        e.preventDefault();
+        if (this.slicePath.length < 2) {
+          this.slicePath = [];
+          return;
+        }
+
+        this.checkSlice();
+        this.slicePath = [];
+      },
+
+      checkSlice() {
+        const sliceTime = Date.now() - this.touchStart;
+
+        this.words = this.words.filter(word => {
+          const rect = word.element.getBoundingClientRect();
+          const letterWidth = 40;
+          
+          for (let i = 0; i < this.slicePath.length - 1; i++) {
+            const p1 = this.slicePath[i];
+            const p2 = this.slicePath[i + 1];
+            
+            if ((p1.y <= rect.bottom && p2.y >= rect.top) ||
+                (p2.y <= rect.bottom && p1.y >= rect.top)) {
+              
+              for (let j = 0; j < word.text.length; j++) {
+                const letterX = rect.left + j * letterWidth;
+                
+                if ((p1.x >= letterX - 20 && p1.x <= letterX + 60) ||
+                    (p2.x >= letterX - 20 && p2.x <= letterX + 60)) {
+                  
+                  if (word.breaks.includes(j)) {
+                    const newSliced = [...word.slicedAt, j].sort((a, b) => a - b);
+                    
+                    if (newSliced.length === word.breaks.length &&
+                        newSliced.every((val, idx) => val === word.breaks[idx])) {
+                      this.sliceSuccess(word, sliceTime);
+                      word.element.remove();
+                      return false;
+                    }
+                    
+                    word.slicedAt = newSliced;
+                    this.markSlice(word, j);
+                    return true;
+                  } else {
+                    this.sliceFail(word);
+                    word.element.remove();
+                    return false;
+                  }
+                }
+              }
+            }
+          }
+          return true;
+        });
+      },
+
+      markSlice(word, index) {
+        const letters = word.element.querySelectorAll('.letter');
+        if (letters[index]) {
+          const mark = document.createElement('div');
+          mark.className = 'slice-mark';
+          letters[index].appendChild(mark);
+        }
+      },
+
+      sliceSuccess(word, time) {
+        this.score += word.text.length * 10;
+        this.wordsCompleted++;
+        this.stats.correct++;
+        this.stats.total++;
+        this.stats.times.push(time);
+        if (word.text.length > this.stats.longestWord.length) {
+          this.stats.longestWord = word.text;
+        }
+        this.updateHUD();
+        this.speak(word.syllables, word.text);
+      },
+
+      sliceFail(word) {
+        this.stats.total++;
+        this.loseLife();
+        this.explode(word.x, word.y);
+      },
+
+      loseLife() {
+        this.lives--;
+        this.updateHUD();
+        if (this.lives <= 0) {
+          this.showResults();
+        }
+      },
+
+      explode(x, y) {
+        const exp = document.createElement('div');
+        exp.className = 'explosion';
+        exp.textContent = '💥';
+        exp.style.left = x + 'px';
+        exp.style.top = y + 'px';
+        document.getElementById('canvas').appendChild(exp);
+        setTimeout(() => exp.remove(), 500);
+      },
+
+      speak(syllables, word) {
+        if (!('speechSynthesis' in window)) return;
+        
+        syllables.forEach((syl, i) => {
+          setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance(syl);
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+          }, i * 400);
+        });
+        
+        setTimeout(() => {
+          const utterance = new SpeechSynthesisUtterance(word);
+          utterance.rate = 0.8;
+          speechSynthesis.speak(utterance);
+        }, syllables.length * 400 + 200);
+      },
+
+      showResults() {
+        cancelAnimationFrame(this.animFrame);
+        document.getElementById('canvas').innerHTML = '';
+        
+        const accuracy = this.stats.total > 0 ? (this.stats.correct / this.stats.total * 100) : 0;
+        const avgTime = this.stats.times.length > 0 ? 
+          this.stats.times.reduce((a, b) => a + b, 0) / this.stats.times.length : 0;
+        
+        document.getElementById('finalScore').textContent = this.score;
+        document.getElementById('accuracy').textContent = accuracy.toFixed(1) + '%';
+        document.getElementById('heroWord').textContent = this.stats.longestWord || 'None';
+        
+        const badgesEl = document.getElementById('badges');
+        badgesEl.innerHTML = '';
+        
+        if (accuracy >= 90) {
+          badgesEl.innerHTML += '<div class="badge badge-accuracy"><div class="badge-icon">🎯</div><div class="badge-label">Accuracy</div></div>';
+        }
+        if (avgTime < 2000 && this.stats.times.length > 0) {
+          badgesEl.innerHTML += '<div class="badge badge-speed"><div class="badge-icon">⚡</div><div class="badge-label">Speed</div></div>';
+        }
+        if (this.stats.correct === this.stats.total && this.stats.total > 0) {
+          badgesEl.innerHTML += '<div class="badge badge-master"><div class="badge-icon">🏆</div><div class="badge-label">Rule Master</div></div>';
+        }
+        
+        const nextBtn = document.getElementById('nextBtn');
+        nextBtn.style.display = this.level < 4 ? 'block' : 'none';
+        
+        this.showScreen('results');
+      },
+
+      retry() {
+        this.startLevel(this.level);
+      },
+
+      nextLevel() {
+        if (this.level < 4) {
+          this.startLevel(this.level + 1);
+        }
+      },
+
+      showMenu() {
+        this.showScreen('menu');
+      },
+    };
+
+    game.init();
+  </script>
+</body>
+</html>
